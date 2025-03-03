@@ -1,0 +1,101 @@
+.profile-content {
+    margin: 50px auto;
+    max-width: 500px;
+}
+
+.profile-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.profile-description {
+    font-size: 14px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.profile-image {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+}
+
+.profile-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    object-fit: cover;
+    background-color: #ccc;
+}
+
+.profile-image__button {
+    background-color: white;
+    color: purple;
+    border: 2px solid purple;
+    padding: 8px 12px;
+    margin-left: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.profile-image__input {
+    display: none;
+}
+
+.form__group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form__group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form__group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form__button-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: purple;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.form__button-submit:hover {
+    background-color: purple;
+}
+
+@media screen and (max-width: 768px) {
+    .profile-content {
+        max-width: 90%;
+    }
+
+    .profile-image {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-image__button {
+        margin-top: 10px;
+        margin-left: 0;
+    }
+}

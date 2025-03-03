@@ -5,37 +5,49 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アプリケーション名</title>
+    <title>フリマアプリ</title>
     <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}">
     <link rel="stylesheet" href="{{ asset('css/common.css') }}">
+
+    @if (Auth::check())
+    <link rel="stylesheet" href="{{ asset('css/header-logged-in.css') }}">
+    @else
+    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    @endif
     @yield('css')
 </head>
 
 <body>
     <header class="header">
         <div class="header__inner">
-            <div class="header-utilities">
-                <a class="header__logo" href="/">
-                    アプリケーション名
-                </a>
-                <nav>
-                    <ul class="header-nav">
-                        @if (Auth::check())
-                        <li class="header-nav__item">
-                            <a class="header-nav__link" href="/mypage">マイページ</a>
-                        </li>
-                        <li class="header-nav__item">
-                            <form class="form" action="/logout" method="post">
-                                @csrf
-                                <button class="header-nav__button">ログアウト</button>
-                            </form>
-                        </li>
-                        @endif
-                    </ul>
-                </nav>
+            <a class="header__logo" href="/">
+                <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH Logo" width="200">
+            </a>
+
+            @if (Auth::check())
+            <!-- ログイン後のヘッダー -->
+            <div class="header__search">
+                <input type="text" placeholder="なにをお探しですか？">
             </div>
+            <nav class="header-nav">
+                <a href="/mypage" class="header-nav__link">マイページ</a>
+                <form action="/logout" method="POST">
+                    @csrf
+                    <button type="submit" class="header-nav__button">ログアウト</button>
+                </form>
+                <a href="/sell" class="header__sell-button">出品</a>
+            </nav>
+            @endif
         </div>
     </header>
+
+    <div class="container">
+        @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+        @endif
+    </div>
 
     <main>
         @yield('content')
