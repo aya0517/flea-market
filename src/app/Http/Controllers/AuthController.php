@@ -34,11 +34,14 @@ class AuthController extends Controller
 
         try {
             $user->sendEmailVerificationNotification();
+            logger()->info("認証メール送信: 成功", ['user_id' => $user->id, 'email' => $user->email]);
         } catch (\Exception $e) {
+            logger()->error("認証メール送信失敗: " . $e->getMessage());
             return back()->with('error', 'メール送信に失敗しました: ' . $e->getMessage());
         }
 
-        return redirect()->route('verification.notice')->with('success', '認証メールを送信しました。メールを確認してください。');
+        logger()->info("リダイレクト先: /email/verify");
+        return redirect('/email/verify')->with('success', '認証メールを送信しました。メールを確認してください。');
     }
 
 
@@ -80,22 +83,28 @@ class AuthController extends Controller
     }
 
     public function profileUpdate(Request $request)
-    {
-        $user = Auth::user();
-        $user->name = $request->input('name');
-        $user->postal_code = $request->input('postal_code');
-        $user->address = $request->input('address');
-        $user->building = $request->input('building');
+{
+    $user = Auth::user();
+    $user->name = $request->input('name');
+    $user->postal_code = $request->input('postal_code');
+    $user->address = $request->input('address');
+    $user->building = $request->input('building');
 
-        if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profile_images', 'public');
-            $user->profile_image = $path;
-        }
-
-        $user->save();
-
-        return redirect()->route('items.index')->with('success', 'プロフィールを更新しました。');
+    if ($request->hasFile('profile_image')) {
+        $path = $request->file('profile_image')->store('profile_images', 'public');
+        $user->profile_image = $path;
     }
+
+    // 初回ログインのフラグを false に更新
+    if ($user->first_login) {
+        $user->first_login = false;
+    }
+
+    $user->save();
+
+    return redirect()->route('items.index')->with('success', 'プロフィールを更新しました。');
+}
+
 
     public function logout(Request $request)
     {
@@ -103,7 +112,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('top');
+        return redirect()->route('login');
     }
 
     public function profile()

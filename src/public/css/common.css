@@ -1,10 +1,10 @@
 .header {
-    background: #000;
+    background: plum;
 }
 
 .header__inner {
     margin: 0 auto;
-    padding: 20px 15px;
+    padding: 10px 15px;
     max-width: 1230px;
 }
 

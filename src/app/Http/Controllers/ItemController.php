@@ -7,19 +7,29 @@ use App\Models\Item;
 
 class ItemController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // おすすめ商品の取得
+        // クエリパラメータからタブのカテゴリを取得（デフォルト: おすすめ）
+        $category = $request->query('category', 'recommended');
+
+        // ログインユーザー情報を取得
+        $user = auth()->user();
+
+        // おすすめ商品の取得（自分の出品を除外して、いいね数順に並べる）
         $recommendedProducts = Item::withCount('favorites')
-            ->orderByDesc('favorites_count')
+            ->when($user, function ($query) use ($user) {
+                return $query->where('user_id', '!=', $user->id); // 自分の出品商品を除外
+            })
+            ->orderByDesc('favorites_count') // いいね数の降順
             ->take(10)
             ->get();
 
-        // ユーザーがお気に入りした商品
-        $userFavorites = auth()->check()
-            ? Item::whereIn('id', auth()->user()->favorites()->pluck('item_id'))->get()
-            : collect();
+        // ログインユーザーがいいねした商品を取得（マイリスト）
+        $userFavorites = $user
+            ? Item::whereIn('id', $user->favorites()->pluck('item_id'))->get()
+            : collect(); // 未ログインの場合は空のコレクションを返す
 
-        return view('items_index', compact('recommendedProducts', 'userFavorites'));
+        return view('items_index', compact('recommendedProducts', 'userFavorites', 'category'));
     }
 }
+

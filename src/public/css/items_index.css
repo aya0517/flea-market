@@ -1,0 +1,48 @@
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-tabs a {
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: gray;
+    padding: 5px 10px;
+}
+
+.nav-tabs a.active {
+    color: red;
+    border-bottom: 3px solid red;
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.product-card {
+    padding: 10px;
+}
+
+.product-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.product-name {
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: left;
+}
