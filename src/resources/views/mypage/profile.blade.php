@@ -45,4 +45,5 @@
         <button type="submit" class="form__button-submit">更新する</button>
     </form>
 </div>
+
 @endsection

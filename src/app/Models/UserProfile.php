@@ -20,4 +20,9 @@ class UserProfile extends Model
     {
         return $this->hasMany(Purchase::class);
     }
+
+    public function purchasedItems()
+    {
+        return $this->hasMany(Item::class, 'buyer_id');
+    }
 }

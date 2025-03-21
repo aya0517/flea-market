@@ -13,13 +13,35 @@
 .header__search {
     flex-grow: 1;
     margin-left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header__search form {
+    width: 100%;
 }
 
 .header__search input {
-    width: 100%;
+    flex-grow: 1;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    width: 60%;
+}
+
+.header__search button {
+    margin-left: 8px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.header__search button:hover {
+    background-color: #eee;
 }
 
 .header-nav {

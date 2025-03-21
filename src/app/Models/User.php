@@ -77,4 +77,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Review::class);
     }
+
+    public function purchasedItems()
+    {
+        return $this->hasOne(UserProfile::class)->with('purchasedItems');
+    }
+
+    public function userProfile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
 }

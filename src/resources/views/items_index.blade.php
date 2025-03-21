@@ -8,34 +8,37 @@
 <div class="container">
     <!-- ナビゲーション -->
     <div class="nav-tabs">
-        <a href="{{ route('items.index', ['category' => 'recommended']) }}"
-            class="{{ $category == 'recommended' ? 'active' : '' }}">
+        <a href="{{ route('items.index', array_merge(request()->query(), ['tab' => 'recommended'])) }}" class="{{ $category == 'recommended' ? 'active' : '' }}">
             おすすめ
         </a>
-        <a href="{{ route('items.index', ['category' => 'mylist']) }}"
-            class="{{ $category == 'mylist' ? 'active' : '' }}">
+        <a href="{{ route('items.index', array_merge(request()->query(), ['tab' => 'mylist'])) }}" class="{{ $category == 'mylist' ? 'active' : '' }}">
             マイリスト
         </a>
     </div>
 
-    @if ($category == 'recommended')
-        <div class="product-list">
-            @foreach ($recommendedProducts as $product)
-            <div class="product-card">
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
-                <p class="product-name">{{ $product->name }}</p>
-            </div>
-            @endforeach
-        </div>
-    @elseif ($category == 'mylist')
-        <div class="product-list">
-            @foreach ($userFavorites as $product)
-            <div class="product-card">
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
-                <p class="product-name">{{ $product->name }}</p>
-            </div>
-            @endforeach
-        </div>
+    <!-- 検索結果表示 -->
+    @if($search)
+        <p>「{{ $search }}」の検索結果</p>
     @endif
+
+    <div class="product-list">
+    @forelse ($products as $product)
+        <div class="product-card">
+            <a href="{{ route('items.detail', ['item' => $product->id]) }}">
+                <img src="{{ asset($product->image_path) }}" alt="{{ $product->name }}">
+                <p class="product-name">{{ $product->name }}</p>
+            </a>
+            @if ($product->is_sold)
+                <p class="sold-label">Sold</p>
+            @endif
+        </div>
+    @empty
+        <p>該当する商品がありません。</p>
+    @endforelse
+
+    @if ($product->is_sold)
+        <p class="sold-label">Sold</p>
+    @endif
+
 </div>
 @endsection

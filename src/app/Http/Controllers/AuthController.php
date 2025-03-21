@@ -41,9 +41,8 @@ class AuthController extends Controller
         }
 
         logger()->info("リダイレクト先: /email/verify");
-        return redirect('/email/verify')->with('success', '認証メールを送信しました。メールを確認してください。');
+        return redirect('/email/verify');
     }
-
 
     public function showLoginForm()
     {
@@ -62,18 +61,15 @@ class AuthController extends Controller
             $user = Auth::user();
             logger()->info("ログイン成功: ", ['user' => $user, 'session_id' => session()->getId()]);
 
-            // デバッグ用ログ
             logger()->info("first_login の値: " . json_encode($user->first_login));
 
-            // 初回ログイン時: /mypage/profile にリダイレクトし、プロフィール更新後に / に遷移
+            // 初回ログイン時にプロフィール編集ページへ
             if ($user->first_login) {
-                logger()->info("初回ログイン: first_login フラグを false に更新し、/mypage/profile にリダイレクト");
+                logger()->info("初回ログイン: /mypage/profile にリダイレクト");
                 return redirect()->route('mypage.profile.edit');
             }
 
-            // 2回目以降のログインはそのまま `/` に遷移
-            logger()->info("Redirecting to: /");
-            return redirect('/')->with('success', 'ログインしました！');
+            return redirect('/');
         }
 
         logger()->error("ログイン失敗: ", ['email' => $credentials['email']]);
@@ -82,30 +78,6 @@ class AuthController extends Controller
         ]);
     }
 
-    public function profileUpdate(Request $request)
-{
-    $user = Auth::user();
-    $user->name = $request->input('name');
-    $user->postal_code = $request->input('postal_code');
-    $user->address = $request->input('address');
-    $user->building = $request->input('building');
-
-    if ($request->hasFile('profile_image')) {
-        $path = $request->file('profile_image')->store('profile_images', 'public');
-        $user->profile_image = $path;
-    }
-
-    // 初回ログインのフラグを false に更新
-    if ($user->first_login) {
-        $user->first_login = false;
-    }
-
-    $user->save();
-
-    return redirect()->route('items.index')->with('success', 'プロフィールを更新しました。');
-}
-
-
     public function logout(Request $request)
     {
         Auth::logout();
@@ -113,10 +85,5 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
-    }
-
-    public function profile()
-    {
-        return view('mypage.profile');
     }
 }

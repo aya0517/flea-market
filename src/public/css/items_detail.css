@@ -1,0 +1,242 @@
+.item-detail {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    align-items: flex-start;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.item-image {
+    margin-top: 50px;
+    flex: 1;
+    max-width: 400px;
+    text-align: center;
+}
+
+.item-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.item-info {
+    margin-top: 25px;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.item-info h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.item-info .brand {
+    font-size: 14px;
+    color: #777;
+    margin-top: -5px;
+}
+
+.item-info .price {
+    font-size: 22px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.item-info .tax {
+    font-size: 14px;
+    color: #777;
+    display: inline-block;
+}
+
+.item-icons {
+    display: flex;
+    justify-content: left;
+    gap: 50px;
+    font-size: 24px;
+}
+
+.item-icons span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+    color: #777;
+    cursor: pointer;
+}
+
+.like-icon i {
+    font-size: 28px;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.like-icon i.active {
+    color: gold;
+}
+
+.comment-icon i {
+    font-size: 28px;
+    color: #777;
+}
+
+.purchase-button {
+    display: block;
+    padding: 12px 24px;
+    background-color: #ff6b6b;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    text-decoration: none;
+}
+
+.purchase-button:hover {
+    background-color: #ff4f4f;
+}
+
+.categories, .condition {
+    font-size: 14px;
+    color: #777;
+}
+
+.category-tag {
+    background-color: rgb(205, 205, 205);
+    color: black;
+    padding: 5px 10px;
+    border-radius: 50px;
+    display: inline-block;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.comment-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment-section h3 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.comment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.comment p {
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    width: 100%;
+}
+
+.comment-section textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.comment-section button {
+    padding: 10px 20px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.comment-section button:hover {
+    background-color: #ff4f4f;
+}
+
+/* タブレット (768px - 850px) */
+@media screen and (max-width: 850px) {
+    .item-detail {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        max-width: 90%;
+    }
+
+    .item-image {
+        max-width: 80%;
+        margin-top: 30px;
+    }
+
+    .item-info {
+        flex: none;
+        width: 100%;
+        margin-top: 15px;
+        gap: 10px;
+    }
+
+    .item-info h2 {
+        font-size: 20px;
+    }
+
+    .item-info .price {
+        font-size: 20px;
+    }
+
+    .purchase-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* スマホ (最大767px) */
+@media screen and (max-width: 767px) {
+    .item-detail {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        max-width: 95%;
+    }
+
+    .item-image {
+        max-width: 100%;
+        margin-top: 20px;
+    }
+
+    .item-info {
+        width: 100%;
+        margin-top: 10px;
+        gap: 8px;
+    }
+
+    .item-info h2 {
+        font-size: 18px;
+    }
+
+    .item-info .price {
+        font-size: 18px;
+    }
+
+    .purchase-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}

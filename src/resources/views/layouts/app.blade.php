@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}">
     <link rel="stylesheet" href="{{ asset('css/common.css') }}">
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     @if (Auth::check())
     <link rel="stylesheet" href="{{ asset('css/header-logged-in.css') }}">
     @else
@@ -24,19 +26,25 @@
                 <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH Logo" width="200">
             </a>
 
-            @if (Auth::check())
-            <!-- ログイン後のヘッダー -->
-            <div class="header__search">
-                <input type="text" placeholder="なにをお探しですか？">
-            </div>
-            <nav class="header-nav">
-                <a href="/mypage" class="header-nav__link">マイページ</a>
-                <form action="/logout" method="POST">
-                    @csrf
-                    <button type="submit" class="header-nav__button">ログアウト</button>
-                </form>
-                <a href="/sell" class="header__sell-button">出品</a>
-            </nav>
+            @if (!request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('verification.notice'))
+                @if (Auth::check())
+                <!-- ログイン後のヘッダー -->
+                <div class="header__search">
+                    <form action="{{ route('items.index') }}" method="GET">
+                        <input type="text" name="search" placeholder="なにをお探しですか？" value="{{ request('search') }}">
+                        <button type="submit">検索</button>
+                    </form>
+                </div>
+
+                <nav class="header-nav">
+                    <a href="/mypage" class="header-nav__link">マイページ</a>
+                    <form action="/logout" method="POST">
+                        @csrf
+                        <button type="submit" class="header-nav__button">ログアウト</button>
+                    </form>
+                    <a href="/sell" class="header__sell-button">出品</a>
+                </nav>
+                @endif
             @endif
         </div>
     </header>

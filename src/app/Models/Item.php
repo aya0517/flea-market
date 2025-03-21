@@ -9,11 +9,16 @@ class Item extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'name', 'description', 'price', 'condition_id', 'image_url'];
+    protected $fillable = ['user_id', 'buyer_id', 'name', 'brand', 'description', 'price', 'condition_id', 'image_path'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
     public function condition()
@@ -23,7 +28,7 @@ class Item extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'item_category');
+    return $this->belongsToMany(Category::class, 'category_item', 'item_id', 'category_id');
     }
 
     public function purchases()
@@ -36,8 +41,14 @@ class Item extends Model
         return $this->hasMany(Favorite::class, 'item_id');
     }
 
-    public function reviews()
+    public function isFavoritedBy(User $user)
     {
-        return $this->hasMany(Review::class);
+        return $this->favorites()->where('user_id', $user->id)->exists();
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 }
