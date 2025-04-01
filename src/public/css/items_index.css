@@ -4,7 +4,6 @@
     padding: 20px;
 }
 
-/* ナビゲーションタブ */
 .nav-tabs {
     display: flex;
     gap: 20px;
@@ -22,18 +21,16 @@
 }
 
 .nav-tabs a.active {
-    color: red;
-    border-bottom: 3px solid red;
+    color: purple;
+    border-bottom: 3px solid purple;
 }
 
-/* 商品一覧 */
 .product-list {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* PCでは4列 */
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
-/* 商品カード */
 .product-card {
     padding: 10px;
     display: flex;
@@ -48,35 +45,38 @@
     margin-bottom: 10px;
 }
 
-.product-card a {
-    display: block;
-    text-align: center;
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
 }
 
 .product-name {
     font-weight: bold;
-    margin-top: 5px;
-    text-align: left;
-}
-
-/* タブレット対応（768-850px） */
-@media (max-width: 850px) {
-    .product-list {
-        grid-template-columns: repeat(3, 1fr); /* タブレットでは3列 */
-    }
-}
-
-/* スマホ対応（〜767px） */
-@media (max-width: 767px) {
-    .product-list {
-        grid-template-columns: repeat(2, 1fr); /* スマホでは2列 */
-    }
+    color: blue;
+    font-size: 16px;
 }
 
 .sold-label {
-    color: red;
-    font-size: 14px;
-    font-weight: bold;
-    margin-top: 5px;
+    background-color: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
 }
 
+
+@media (max-width: 850px) {
+    .product-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .product-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

@@ -22,23 +22,24 @@
     @endif
 
     <div class="product-list">
-    @forelse ($products as $product)
+    @forelse ($items as $item)
         <div class="product-card">
-            <a href="{{ route('items.detail', ['item' => $product->id]) }}">
-                <img src="{{ asset($product->image_path) }}" alt="{{ $product->name }}">
-                <p class="product-name">{{ $product->name }}</p>
-            </a>
-            @if ($product->is_sold)
-                <p class="sold-label">Sold</p>
-            @endif
+            <a href="{{ route('items.detail', ['item' => $item->id]) }}">
+    <img src="{{ asset($item->image_path) }}" alt="{{ $item->name }}">
+</a>
+
+<div class="product-info">
+    <a href="{{ route('items.detail', ['item' => $item->id]) }}">
+        <p class="product-name">{{ $item->name }}</p>
+    </a>
+    @if ($item->is_sold)
+        <span class="sold-label">Sold</span>
+    @endif
+</div>
         </div>
     @empty
         <p>該当する商品がありません。</p>
     @endforelse
-
-    @if ($product->is_sold)
-        <p class="sold-label">Sold</p>
-    @endif
-
+    </div>
 </div>
 @endsection

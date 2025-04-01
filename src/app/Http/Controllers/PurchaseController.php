@@ -16,7 +16,7 @@ class PurchaseController extends Controller
     {
         $item = Item::findOrFail($item_id);
 
-        $userProfile = auth()->user()->profile; // ユーザープロフィールを取得
+        $userProfile = auth()->user()->profile;
         $postal_code = $userProfile ? $userProfile->postal_code : '郵便番号が登録されていません';
         $shipping_address = $userProfile ? ($userProfile->address . ' ' . $userProfile->building_name) : '住所が登録されていません';
 
@@ -49,7 +49,7 @@ class PurchaseController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('purchase.success', ['item_id' => $item->id]), // item_id を渡す
+            'success_url' => route('purchase.success', ['item_id' => $item->id]),
             'cancel_url' => route('purchase.cancel'),
         ]);
 
@@ -62,7 +62,7 @@ class PurchaseController extends Controller
         $item = Item::findOrFail($request->item_id);
 
         if ($item->is_sold) {
-            return redirect()->route('items.index')->with('error', 'この商品は既に購入されています。');
+            return redirect()->route('items.index');
         }
 
         // 購入者情報を更新
@@ -71,7 +71,7 @@ class PurchaseController extends Controller
             'buyer_id' => Auth::id()
         ]);
 
-        return view('purchase.success', compact('item'));
+        return redirect()->route('items.detail', ['item' => $item_id]);
     }
 
     // 決済キャンセル
@@ -107,6 +107,6 @@ class PurchaseController extends Controller
             ]
         );
 
-        return redirect()->route('purchase.index')->with('success', '配送先住所を更新しました。');
+        return redirect()->route('purchase.show', ['item_id' => $item_id]);
     }
 }

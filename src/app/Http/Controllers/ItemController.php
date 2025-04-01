@@ -10,33 +10,25 @@ class ItemController extends Controller
 {
     public function index(Request $request)
     {
-        $category = $request->query('tab', 'recommended'); // デフォルト: おすすめ
+        $category = $request->query('tab', 'recommended');
         $user = auth()->user();
         $search = $request->query('search');
 
         if ($category === 'recommended') {
-            // おすすめ商品（自分の出品を除外、いいね数順）
-            $products = Item::withCount('favorites')
-                ->when($user, function ($query) use ($user) {
-                    return $query->where('user_id', '!=', $user->id);
-                })
-                ->when($search, function ($query) use ($search) {
-                    return $query->where('name', 'like', '%' . $search . '%');
-                })
+            $items = Item::withCount('favorites')
+                ->when($user, fn($query) => $query->where('user_id', '!=', $user->id))
+                ->when($search, fn($query) => $query->where('name', 'like', "%$search%"))
                 ->orderByDesc('favorites_count')
-                ->paginate(10); // ページネーション適用
+                ->paginate(10);
         } else {
-            // マイリスト（自分がいいねした商品）
-            $products = $user
-                ? Item::whereIn('id', $user->favorites()->pluck('item_id'))
-                    ->when($search, function ($query) use ($search) {
-                        return $query->where('name', 'like', '%' . $search . '%');
-                    })
+            $items = $user
+                ? $user->favorites()
+                    ->when($search, fn($query) => $query->where('name', 'like', "%$search%"))
                     ->paginate(10)
                 : collect();
         }
 
-        return view('items_index', compact('products', 'category', 'search'));
+        return view('items_index', compact('items', 'category', 'search'));
     }
 
     public function detail($id)
@@ -84,6 +76,6 @@ class ItemController extends Controller
             $item->categories()->sync($request->categories);
         }
 
-        return redirect()->route('items.index')->with('success', '商品を出品しました！');
+        return redirect()->route('items.index');
     }
 }

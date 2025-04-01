@@ -78,3 +78,56 @@
 .header__sell-button:hover {
     background-color: #ddd;
 }
+
+@media screen and (min-width: 1400px) and (max-width: 1540px) {
+.header__inner {
+    max-width: 90%;
+}
+
+.header__search input {
+    width: 70%;
+}
+
+.header-utilities nav {
+    width: auto;
+}
+}
+
+@media screen and (min-width: 768px) and (max-width: 850px) {
+.header__inner {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.header__search {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 10px;
+    justify-content: flex-start;
+}
+
+.header__search input {
+    width: 100%;
+    max-width: 400px;
+}
+
+.header__search button {
+    margin-left: 10px;
+    padding: 6px 10px;
+}
+
+.header-utilities {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.header-nav {
+    margin-left: 0;
+}
+
+.header__sell-button {
+    padding: 6px 10px;
+    font-size: 14px;
+}
+}

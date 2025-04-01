@@ -19,17 +19,45 @@
         <p class="price">￥{{ number_format($item->price) }}<span class="tax">（税込）</span></p>
 
         <!-- いいね＆コメント -->
-        <div class="item-icons">
-            <span class="like-icon" data-item-id="{{ $item->id }}">
-                <i class="fa-regular fa-star {{ $isLiked ? 'active' : '' }}"></i>
-                <span class="count">{{ $item->favorites->count() }}</span>
-            </span>
+<div class="item-icons">
+    <!-- いいねアイコン -->
+    <span class="like-icon" data-item-id="{{ $item->id }}">
+        @auth
+            @php
+                $isLiked = $item->favorites->contains('user_id', auth()->id());
+            @endphp
+            <form action="{{ $isLiked ? route('favorites.destroy', $item->id) : route('favorites.store') }}"
+                method="POST" class="inline-form favorite-form">
+                @csrf
+                @if ($isLiked)
+                    @method('DELETE')
+                @else
+                    <input type="hidden" name="item_id" value="{{ $item->id }}">
+                @endif
 
-            <span class="comment-icon">
-                <i class="fa-regular fa-comment"></i>
-                <span class="count">{{ $item->comments->count() }}</span>
-            </span>
-        </div>
+                <button type="submit" class="icon-button">
+                    <i class="fa-regular fa-star {{ $isLiked ? 'active' : '' }}"></i>
+                    <span class="count">{{ $item->favorites->count() }}</span>
+                </button>
+            </form>
+        @endauth
+
+        @guest
+            <!-- ログインしてない場合は静的表示 -->
+            <i class="fa-regular fa-star"></i>
+            <span class="count">{{ $item->favorites->count() }}</span>
+        @endguest
+    </span>
+
+    <!-- コメントアイコン -->
+    <span class="comment-icon">
+        <a href="#comment-section" class="icon-button">
+            <i class="fa-regular fa-comment"></i>
+            <span class="count">{{ $item->comments->count() }}</span>
+        </a>
+    </span>
+</div>
+
 
         <!-- 購入ボタン -->
         <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="purchase-button">購入手続きへ</a>
@@ -58,27 +86,50 @@
         <div class="comment-section">
             @foreach ($item->comments as $comment)
                 <div class="comment">
-                    <img src="{{ asset($comment->user->profile_image_url ?? 'images/default-profile.png') }}" alt="Profile">
-                    <div>
-                        <p><strong>{{ $comment->user->name }}</strong></p>
-                        <p>{{ $comment->content }}</p>
+                    <div class="comment-icon">
+                        <img src="{{ isset($comment->user->profile) && $comment->user->profile->profile_image ? asset('storage/' . $comment->user->profile->profile_image) : asset('images/default-profile.png') }}" alt="Profile">
+                        <span class="user-name">{{ $comment->user->name }}</span>
+                    </div>
+                    <div class="bubble">
+                        {{ $comment->content }}
                     </div>
                 </div>
             @endforeach
 
-            @auth
-            <form method="POST" action="{{ route('comments.store', ['item' => $item->id]) }}">
-                @csrf
-                <textarea name="content" placeholder="商品へのコメント">{{ old('content') }}</textarea>
-                @error('content')
-                    <p class="error-message" style="color: red;">{{ $message }}</p>
-                @enderror
-                <button type="submit">コメントを送信する</button>
-            </form>
-            @else
-            <p>ログインするとコメントを投稿できます。</p>
-            @endauth
+        <form
+        method="POST"
+        action="{{ Auth::check() ? route('comments.store', ['item' => $item->id]) : route('login') }}"
+        @if (!Auth::check()) onsubmit="redirectToLogin(event)" @endif
+        >
+            @csrf
+            <textarea
+                name="content"
+                placeholder="商品へのコメント"
+                onclick="handleCommentClick()"
+            >{{ old('content') }}</textarea>
+
+            @error('content')
+                <p class="error-message" style="color: red;">{{ $message }}</p>
+            @enderror
+
+            <button type="submit">
+                コメントを送信する
+            </button>
+        </form>
     </div>
+
+    <script>
+        function handleCommentClick() {
+            @if (!Auth::check())
+                window.location.href = "{{ route('login') }}";
+            @endif
+        }
+
+        function redirectToLogin(e) {
+            e.preventDefault();
+                window.location.href = "{{ route('login') }}";
+        }
+    </script>
 </div>
 @endsection
 
@@ -107,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function() {
             let currentCount = parseInt(countElement.textContent);
             countElement.textContent = isFavorited ? currentCount - 1 : currentCount + 1;
 
-            console.log(`✅ APIリクエストを送信: /items/${itemId}/favorite`); 
+            console.log(`✅ APIリクエストを送信: /items/${itemId}/favorite`);
 
             fetch(`/items/${itemId}/favorite`, {
                 method: "POST",

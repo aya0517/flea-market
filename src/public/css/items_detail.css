@@ -87,7 +87,7 @@
 .purchase-button {
     display: block;
     padding: 12px 24px;
-    background-color: #ff6b6b;
+    background-color: purple;
     color: white;
     text-align: center;
     border-radius: 5px;
@@ -97,10 +97,6 @@
     border: none;
     width: 100%;
     text-decoration: none;
-}
-
-.purchase-button:hover {
-    background-color: #ff4f4f;
 }
 
 .categories, .condition {
@@ -131,26 +127,45 @@
 
 .comment {
     display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.comment-icon {
+    display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
-.comment img {
-    width: 40px;
-    height: 40px;
+.comment-icon img {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
+    object-fit: cover;
+    background-color: #ddd;
+    flex-shrink: 0;
 }
 
-.comment p {
-    background: #f8f8f8;
-    padding: 10px;
-    border-radius: 5px;
+.user-name {
+    font-weight: bold;
+    font-size: 15px;
+    color: #000;
+    line-height: 1;
+}
+
+.bubble {
+    background-color: #e5e5e5;
+    padding: 10px 15px;
+    border-radius: 10px;
     font-size: 14px;
     color: #333;
-    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
 .comment-section textarea {
+    height: 120px;
     width: 100%;
     padding: 10px;
     border-radius: 5px;
@@ -159,7 +174,7 @@
 
 .comment-section button {
     padding: 10px 20px;
-    background-color: #ff6b6b;
+    background-color: purple;
     color: white;
     border: none;
     border-radius: 5px;
@@ -168,11 +183,19 @@
     width: 100%;
 }
 
-.comment-section button:hover {
-    background-color: #ff4f4f;
+.icon-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 
-/* タブレット (768px - 850px) */
+.icon-button:hover i {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
 @media screen and (max-width: 850px) {
     .item-detail {
         flex-direction: column;
@@ -207,7 +230,6 @@
     }
 }
 
-/* スマホ (最大767px) */
 @media screen and (max-width: 767px) {
     .item-detail {
         flex-direction: column;

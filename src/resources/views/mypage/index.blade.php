@@ -9,7 +9,7 @@
     <!-- プロフィール情報 -->
     <div class="profile-header">
         <div class="profile-info">
-            <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-profile.png') }}" alt="プロフィール画像" class="profile-image">
+            <img src="{{ isset($user->profile) && $user->profile->profile_image ? asset('storage/' . $user->profile->profile_image) : asset('images/default-profile.png') }}" alt="プロフィール画像" class="profile-image">
             <h2 class="username">{{ $user->name }}</h2>
         </div>
         <a href="{{ route('mypage.profile.edit') }}" class="btn edit-profile">プロフィールを編集</a>
@@ -28,8 +28,10 @@
         @else
             @foreach($items as $item)
                 <div class="item-card">
-                    <img src="{{ asset('storage/' . $item->image) }}" alt="商品画像" class="item-image">
-                    <p class="item-name">{{ $item->name }}</p>
+                    <a href="{{ route('items.detail', ['item' => $item->id]) }}">
+                        <img src="{{ asset($item->image_path) }}" alt="商品画像" class="item-image">
+                        <p class="item-name">{{ $item->name }}</p>
+                    </a>
                 </div>
             @endforeach
         @endif

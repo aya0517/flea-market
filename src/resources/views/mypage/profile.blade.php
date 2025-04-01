@@ -14,14 +14,15 @@
     </div>
     @endif
 
-    <div class="profile-image">
-        <img src="{{ isset(Auth::user()->profile) && Auth::user()->profile->profile_image ? asset('storage/' . Auth::user()->profile->profile_image) : asset('images/default-avatar.png') }}" alt=" ">
-        <label for="profile_image" class="profile-image__button">画像を選択する</label>
-        <input type="file" id="profile_image" name="profile_image" class="profile-image__input">
-    </div>
-
     <form action="{{ route('mypage.profile.update') }}" method="post" enctype="multipart/form-data">
         @csrf
+
+        <div class="profile-image">
+            <img src="{{ isset(Auth::user()->profile) && Auth::user()->profile->profile_image ? asset('storage/' . Auth::user()->profile->profile_image) : asset('images/default-avatar.png') }}" alt=" ">
+            <label for="profile_image" class="profile-image__button">画像を選択する</label>
+            <input type="file" id="profile_image" name="profile_image" class="profile-image__input">
+        </div>
+
         <div class="form__group">
             <label for="name">ユーザー名</label>
             <input type="text" name="name" value="{{ old('name', isset(Auth::user()->profile) ? Auth::user()->profile->username : '') }}" required>

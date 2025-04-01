@@ -51,4 +51,10 @@ class Item extends Model
         return $this->hasMany(Comment::class);
     }
 
+public function getIsSoldAttribute()
+{
+    return !is_null($this->buyer_id);
+}
+
+
 }

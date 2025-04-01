@@ -25,7 +25,6 @@
         </div>
 
         <button type="submit" class="btn btn-primary">更新</button>
-        <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="btn btn-secondary">キャンセル</a>
     </form>
 </div>
 @endsection

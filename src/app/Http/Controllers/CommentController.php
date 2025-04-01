@@ -29,6 +29,6 @@ class CommentController extends Controller
             'content' => $request->content,
         ]);
 
-        return redirect()->route('items.show', $item->id)->with('success', 'コメントを投稿しました！');
+        return redirect()->route('items.detail', $item->id);
     }
 }
