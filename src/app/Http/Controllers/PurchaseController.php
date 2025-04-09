@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PurchaseRequest;
 use Illuminate\Http\Request;
 use App\Models\UserProfile;
 use App\Models\Item;
@@ -22,23 +23,20 @@ class PurchaseController extends Controller
         return view('purchase.show', compact('item', 'postal_code', 'shipping_address'));
     }
 
-    public function processPayment(Request $request)
+    public function processPayment(PurchaseRequest $request)
     {
-        $request->validate([
-            'payment_method' => 'required|in:card,konbini',
-            'item_id' => 'required|exists:items,id',
-        ]);
+        $validated = $request->validated();
 
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        $item = Item::findOrFail($request->item_id);
+        $item = Item::findOrFail($validated['item_id']);
 
         if ($item->is_sold) {
-                return redirect()->route('purchase.show',     ['item_id' => $item->id])
-                    ->with('error', 'この商品は既に購入されています。');
+            return redirect()->route('purchase.show', ['item_id' => $item->id])
+                ->with('error', 'この商品は既に購入されています。');
         }
 
-        $paymentMethod = $request->payment_method;
+        $paymentMethod = $validated['payment_method'];
 
         if ($paymentMethod === 'konbini') {
             $item->update([
@@ -47,11 +45,11 @@ class PurchaseController extends Controller
             ]);
 
             return redirect()->route('purchase.show', ['item_id' => $item->id])
-            ->with('success', '購入が成功しました。');
+                ->with('success', '購入が成功しました。');
         }
 
         $checkoutSession = Session::create([
-            'payment_method_types' => $paymentMethod === 'card' ? ['card'] : ['konbini'],
+            'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'jpy',

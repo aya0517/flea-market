@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\Item;
+use App\Http\Requests\AddressRequest;
 
 class MypageController extends Controller
 {
@@ -19,41 +20,33 @@ class MypageController extends Controller
         return view('mypage.profile', compact('purchasedItems'));
     }
 
-    public function update(Request $request)
+    public function update(AddressRequest $request, ProfileRequest $profileRequest)
     {
         $user = Auth::user();
-
-        $validated = $request->validate([
-            'profile_image' => 'nullable|image|max:2048',
-            'name' => 'required|string|max:255',
-            'postal_code' => 'nullable|regex:/^\d{3}-?\d{4}$/',
-            'address' => 'nullable|string|max:255',
-            'building' => 'nullable|string|max:255',
-        ]);
+        $addressValidated = $addressRequest->validated();
+        $profileValidated = $profileRequest->validated();
 
         if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profile_images', 'public');
-            $validated['profile_image'] = $path;
+            $validated['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        } else {
+            $validated['profile_image'] = optional($user->profile)->profile_image;
         }
 
         $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
             [
-                'username' => $validated['name'],
-                'postal_code' => $validated['postal_code'],
-                'address' => $validated['address'],
-                'building_name' => $validated['building'],
-                'profile_image' => $validated['profile_image'] ?? optional($user->profile)->profile_image,
+                'username'      => $validated['name'],
+                'postal_code'   => $validated['postal_code'],
+                'address'       => $validated['address'],
+                'building_name' => $validated['building_name'],
+                'profile_image' => $validated['profile_image'],
             ]
         );
 
         if ($user->first_login) {
-            $user->first_login = false;
-            $user->save();
-
+            $user->update(['first_login' => false]);
             Auth::setUser($user);
             session()->regenerate();
-
             return redirect('/');
         }
 

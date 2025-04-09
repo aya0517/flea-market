@@ -7,22 +7,13 @@ use App\Models\Item;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\CommentRequest;
 
 class CommentController extends Controller
 {
 
-    public function store(Request $request, Item $item)
+    public function store( CommentRequest $request, Item $item)
     {
-
-        $validator = Validator::make($request->all(), [
-            'content' => ['required', 'string', 'max:255'],
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-
         Comment::create([
             'user_id' => Auth::id(),
             'item_id' => $item->id,

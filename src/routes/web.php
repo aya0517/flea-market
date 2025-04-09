@@ -35,19 +35,22 @@ Route::middleware(['web'])->group(function () {
     })->middleware('auth')->name('verification.notice');
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
+    $request->fulfill();
 
-        $user = auth()->user();
+    $user = auth()->user();
 
         if (!$user->profile) {
-            return redirect()->route('mypage.profile.edit');
-        }
+        logger()->info("メール認証後: プロフィール未登録なので編集画面へリダイレクト");
+        return redirect()->route('mypage.profile.edit');
+    }
 
-        if ($user && $user->first_login) {
-            return redirect()->route('mypage.profile.edit');
-        }
+    if ($user && $user->first_login) {
 
-        return redirect()->route('items.index');
+        logger()->info("メール認証後: 初回プロフィール編集ページへリダイレクト");
+        return redirect()->route('mypage.profile.edit');
+    }
+
+    return redirect()->route('items.index');
     })->middleware(['auth', 'signed'])->name('verification.verify');
 
     Route::post('/email/resend', function (Request $request) {
@@ -66,9 +69,14 @@ Route::middleware(['web'])->group(function () {
 
         Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'editAddress'])->name('purchase.address');
         Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('purchase.address.update');
+
+        Route::get('/mypage', [MypageController::class, 'index'])->name('mypage.index');
     });
 
     Route::post('/items/{item}/comments', [CommentController::class, 'store'])->middleware('auth')->name('comments.store');
+
+    Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{item}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/sell', [SellController::class, 'create'])->name('sell.create');

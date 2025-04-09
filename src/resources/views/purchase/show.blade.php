@@ -19,18 +19,23 @@
             <h3>支払い方法</h3>
             <select id="payment" class="payment-select">
                 <option value="" selected disabled>選択してください</option>
-                <option value="convenience">コンビニ支払い</option>
+                <option value="konbini">コンビニ支払い</option>
                 <option value="card">カード支払い</option>
             </select>
+            @error('payment_method')
+                <p class="error-message" style="color: red;">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="shipping-address">
             <h3>配送先</h3>
             <a href="{{ route('purchase.address', ['item_id' => $item->id]) }}" class="change-address">変更する</a>
         </div>
-        <p class="shipping-details">〒 {{ Auth::user()->userProfile->postal_code ?? '未設定' }}</p>
-        <p class="shipping-details">{{ Auth::user()->userProfile->address ?? '未設定' }}</p>
-        <p class="shipping-details">{{ Auth::user()->userProfile->building_name ?? '' }}</p>
+        <p class="shipping-details">〒 {{ $postal_code }}</p>
+        <p class="shipping-details">{{ $shipping_address }}</p>
+        @error('shipping_address')
+            <p class="error-message" style="color: red;">{{ $message }}</p>
+        @enderror
     </div>
 
     <div class="purchase-right">
@@ -49,20 +54,17 @@
         <form id="purchase-form" method="POST" action="{{ route('purchase.process') }}">
             @csrf
             <input type="hidden" name="payment_method" id="payment_method" value="">
+            <input type="hidden" name="shipping_address" value="{{ $shipping_address }}">
             <input type="hidden" name="item_id" value="{{ $item->id }}">
             <button type="submit" class="purchase-button">購入する</button>
         </form>
 
         @if(session('error'))
-            <div class="alert">
-                {{ session('error') }}
-            </div>
+            <div class="alert">{{ session('error') }}</div>
         @endif
 
         @if(session('success'))
-            <div class="alert">
-                {{ session('success') }}
-            </div>
+            <div class="alert">{{ session('success') }}</div>
         @endif
     </div>
 </div>
@@ -79,10 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
         hiddenInput.value = paymentSelect.value;
     }
 
-    paymentSelect.addEventListener("change", function() {
-        updatePaymentText();
-    });
+    paymentSelect.addEventListener("change", updatePaymentText);
 });
 </script>
 @endsection
-
