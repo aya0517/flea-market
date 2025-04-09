@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PurchaseController extends Controller
 {
-    // 商品購入画面の表示
     public function show($item_id)
     {
         $item = Item::findOrFail($item_id);
@@ -23,18 +22,33 @@ class PurchaseController extends Controller
         return view('purchase.show', compact('item', 'postal_code', 'shipping_address'));
     }
 
-    // 決済処理
     public function processPayment(Request $request)
     {
+        $request->validate([
+            'payment_method' => 'required|in:card,konbini',
+            'item_id' => 'required|exists:items,id',
+        ]);
+
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         $item = Item::findOrFail($request->item_id);
 
         if ($item->is_sold) {
-            return redirect()->back()->with('error', 'この商品は既に購入されています。');
+                return redirect()->route('purchase.show',     ['item_id' => $item->id])
+                    ->with('error', 'この商品は既に購入されています。');
         }
 
         $paymentMethod = $request->payment_method;
+
+        if ($paymentMethod === 'konbini') {
+            $item->update([
+                'is_sold' => true,
+                'buyer_id' => Auth::id()
+            ]);
+
+            return redirect()->route('purchase.show', ['item_id' => $item->id])
+            ->with('success', '購入が成功しました。');
+        }
 
         $checkoutSession = Session::create([
             'payment_method_types' => $paymentMethod === 'card' ? ['card'] : ['konbini'],
@@ -49,14 +63,13 @@ class PurchaseController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('purchase.success', ['item_id' => $item->id]),
-            'cancel_url' => route('purchase.cancel'),
+            'success_url' => route('purchase.show', ['item_id' => $item->id]),
+            'cancel_url' => route('purchase.cancel', ['item_id' => $item->id]),
         ]);
 
         return redirect($checkoutSession->url);
     }
 
-    // 決済成功後の処理
     public function paymentSuccess(Request $request)
     {
         $item = Item::findOrFail($request->item_id);
@@ -65,22 +78,14 @@ class PurchaseController extends Controller
             return redirect()->route('items.index');
         }
 
-        // 購入者情報を更新
         $item->update([
             'is_sold' => true,
             'buyer_id' => Auth::id()
         ]);
 
-        return redirect()->route('items.detail', ['item' => $item_id]);
+        return redirect()->route('items.detail',['item' => $item->id]);
     }
 
-    // 決済キャンセル
-    public function paymentCancel()
-    {
-        return view('purchase.cancel');
-    }
-
-    // 住所変更画面の表示
     public function editAddress($item_id)
     {
         $item = Item::findOrFail($item_id);
@@ -89,7 +94,6 @@ class PurchaseController extends Controller
         return view('purchase.address_edit', compact('item', 'userProfile'));
     }
 
-    // 住所を更新する処理
     public function updateAddress(Request $request, $item_id)
     {
         $request->validate([

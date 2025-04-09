@@ -6,7 +6,6 @@
 
 @section('content')
 <div class="purchase-container">
-    <!-- 左側の商品情報 -->
     <div class="purchase-left">
         <div class="product-details">
             <img src="{{ asset($item->image_path) }}" alt="{{ $item->name }}" class="product-image">
@@ -16,7 +15,6 @@
             </div>
         </div>
 
-        <!-- 支払い方法 -->
         <div class="payment-method">
             <h3>支払い方法</h3>
             <select id="payment" class="payment-select">
@@ -26,7 +24,6 @@
             </select>
         </div>
 
-        <!-- 配送先 -->
         <div class="shipping-address">
             <h3>配送先</h3>
             <a href="{{ route('purchase.address', ['item_id' => $item->id]) }}" class="change-address">変更する</a>
@@ -36,7 +33,6 @@
         <p class="shipping-details">{{ Auth::user()->userProfile->building_name ?? '' }}</p>
     </div>
 
-    <!-- 右側の商品代金・支払い方法・購入ボタン -->
     <div class="purchase-right">
         <div class="summary-box">
             <table>
@@ -56,6 +52,18 @@
             <input type="hidden" name="item_id" value="{{ $item->id }}">
             <button type="submit" class="purchase-button">購入する</button>
         </form>
+
+        @if(session('error'))
+            <div class="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert">
+                {{ session('success') }}
+            </div>
+        @endif
     </div>
 </div>
 

@@ -34,8 +34,8 @@ class SellController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
-            $file->move(public_path('images/items'), $fileName);
-            $imagePath = 'images/items/' . $fileName;
+
+            $imagePath = $file->storeAs('images/items', $fileName, 'public');
         }
 
         $item = new Item();

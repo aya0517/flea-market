@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // 初期データを挿入
         DB::table('categories')->insert([
             ['name' => 'ファッション'],
             ['name' => '家電'],

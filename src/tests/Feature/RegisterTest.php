@@ -67,7 +67,6 @@ class RegisterTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 
-    /** @test
     public function test_successful_registration_redirects_to_login()
     {
         $response = $this->post('/register', [
@@ -77,10 +76,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/email/verify');
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
         ]);
     }
-    */
 }

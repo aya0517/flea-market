@@ -165,3 +165,10 @@
 .purchase-button:hover {
     background-color: #c0392b;
 }
+
+.alert {
+    margin-top: 20px;
+    font-size: 1em;
+    text-align: center;
+    color: red;
+}

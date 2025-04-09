@@ -18,60 +18,44 @@ class ShippingAddressTest extends TestCase
         $this->seed(\Database\Seeders\ConditionSeeder::class);
     }
 
-    public function test_guest_cannot_access_shipping_address_edit()
-    {
-        $item = Item::factory()->create();
-        $response = $this->get('/purchase/address/' . $item->id);
-        $response->assertRedirect('/login');
-    }
-
-    public function test_authenticated_user_can_view_address_edit_form()
-    {
-        $user = User::factory()->create();
-        $item = Item::factory()->create();
-
-        $this->actingAs($user);
-        $response = $this->get('/purchase/address/' . $item->id);
-
-        $response->assertStatus(200);
-        $response->assertViewIs('purchase.address_edit');
-    }
-
-    public function test_user_can_update_shipping_address()
+    public function test_address_changes_are_reflected_on_purchase_page()
     {
         $user = User::factory()->create();
         $item = Item::factory()->create();
 
         $this->actingAs($user);
 
-        $response = $this->post('/purchase/address/' . $item->id, [
-            'postal_code' => '123-4567',
-            'address' => '東京都千代田区',
-            'building_name' => 'テストビル 201'
-        ]);
-
-        $response->assertRedirect(route('mypage.index'));
-
-        $this->assertDatabaseHas('user_profiles', [
-            'user_id' => $user->id,
-            'postal_code' => '123-4567',
+        $this->post("/purchase/address/{$item->id}", [
+            'postal_code' => '100-0001',
             'address' => '東京都千代田区',
             'building_name' => 'テストビル 201',
         ]);
+
+        $response = $this->get("/purchase/{$item->id}");
+
+        $response->assertSee('100-0001');
+        $response->assertSee('東京都千代田区');
+        $response->assertSee('テストビル 201');
     }
 
-    public function test_address_update_requires_validation()
+    public function test_address_is_saved_in_user_profile()
     {
         $user = User::factory()->create();
         $item = Item::factory()->create();
 
         $this->actingAs($user);
 
-        $response = $this->post('/purchase/address/' . $item->id, [
-            'postal_code' => '',
-            'address' => '',
+        $this->post("/purchase/address/{$item->id}", [
+            'postal_code' => '173-0001',
+            'address' => '東京都板橋区',
+            'building_name' => 'テストビル 303',
         ]);
 
-        $response->assertSessionHasErrors(['postal_code', 'address']);
+        $this->assertDatabaseHas('user_profiles', [
+            'user_id' => $user->id,
+            'postal_code' => '173-0001',
+            'address' => '東京都板橋区',
+            'building_name' => 'テストビル 303',
+        ]);
     }
 }

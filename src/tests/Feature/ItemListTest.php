@@ -34,12 +34,22 @@ class ItemListTest extends TestCase
 
     public function test_sold_items_show_sold_label()
     {
-        $soldItem = Item::factory()->create(['is_sold' => true]);
+        $user = \App\Models\User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $soldItem = Item::factory()->create([
+            'name' => 'テストSOLD商品',
+            'user_id' => $otherUser->id,
+            'buyer_id' => $user->id,
+        ]);
+
+        $this->actingAs($user);
 
         $response = $this->get('/');
 
         $response->assertSee('Sold');
     }
+
 
     public function test_user_cannot_see_their_own_items()
     {

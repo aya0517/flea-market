@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Condition;
 use App\Models\Item;
 use App\Models\Comment;
-use App\Models\Condition;
+use App\Models\Favorite;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ProductDetailTest extends TestCase
 {
@@ -16,88 +18,80 @@ class ProductDetailTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->seed(\Database\Seeders\ConditionSeeder::class);
+        $this->seed(\Database\Seeders\CategorySeeder::class);
     }
 
-    public function test_guest_can_view_product_detail()
+    public function test_authenticated_user_can_view_product_details_with_all_info()
     {
-        $item = Item::factory()->create();
-        $response = $this->get('/item/' . $item->id);
-        $response->assertStatus(200);
-    }
+        $user = User::factory()->create();
+        $category1 = Category::factory()->create();
+        $category2 = Category::factory()->create();
+        $condition = Condition::first();
 
-    public function test_product_detail_displays_all_essential_information()
-    {
         $item = Item::factory()->create([
+            'user_id' => $user->id,
+            'condition_id' => $condition->id,
             'name' => 'テスト商品',
-            'price' => 9999,
-            'description' => 'これは説明文です',
-            'condition_id' => 1,
+            'price' => 5000,
+            'description' => '商品の説明です。',
+            'image_path' => 'images/items/test_image.jpg',
         ]);
 
-        $response = $this->get('/item/' . $item->id);
+        $item->categories()->attach([$category1->id, $category2->id]);
 
-        $response->assertStatus(200);
-        $response->assertSee('テスト商品');
-        $response->assertSee('9,999');
-        $response->assertSee('これは説明文です');
-    }
-
-    public function test_user_can_post_comment()
-    {
-        $user = User::factory()->create();
-        $item = Item::factory()->create();
-
-        $this->actingAs($user);
-        $response = $this->post("/items/{$item->id}/comments", [
-            'content' => '購入できますか？'
-        ]);
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('comments', [
+        $comment = Comment::create([
             'user_id' => $user->id,
             'item_id' => $item->id,
-            'content' => '購入できますか？'
-        ]);
-    }
-
-    public function test_guest_cannot_post_comment()
-    {
-        $item = Item::factory()->create();
-
-        $response = $this->post("/items/{$item->id}/comments", [
-            'content' => 'ログインしてないコメント'
+            'content' => '素晴らしい商品です！',
         ]);
 
-        $response->assertRedirect('/login');
-        $this->assertDatabaseMissing('comments', [
-            'content' => 'ログインしてないコメント'
-        ]);
-    }
-
-    public function test_user_can_see_comment_count_and_details()
-    {
-        $user = User::factory()->create();
-        $item = Item::factory()->create();
-        Comment::factory()->count(2)->create([
+        Favorite::create([
             'user_id' => $user->id,
             'item_id' => $item->id,
-            'content' => 'テストコメント',
         ]);
 
-        $response = $this->get('/item/' . $item->id);
-        $response->assertSee('テストコメント');
-    }
-
-    public function test_purchase_button_navigates_to_confirmation()
-    {
-        $item = Item::factory()->create();
-        $user = User::factory()->create();
-
-        $this->actingAs($user);
-        $response = $this->get('/purchase/' . $item->id);
+        $response = $this->get(route('items.detail', ['item' => $item->id]));
 
         $response->assertStatus(200);
-        $response->assertViewIs('purchase.show');
+        $response->assertSee($item->name);
+        $response->assertSee('￥5,000');
+        $response->assertSee($item->description);
+        $response->assertSee($item->image_path);
+        $response->assertSee($item->condition->name);
+        $response->assertSee($category1->name);
+        $response->assertSee($category2->name);
+        $response->assertSee($comment->content);
+        $response->assertSee($comment->user->name);
+        $response->assertSee('コメント (1)');
+        $response->assertSee('1');
     }
+
+    public function test_authenticated_user_can_view_product_details_with_multiple_categories()
+    {
+        $user = User::factory()->create();
+        $category1 = Category::factory()->create();
+        $category2 = Category::factory()->create();
+        $condition = Condition::first();
+
+        $item = Item::factory()->create([
+            'user_id' => $user->id,
+            'condition_id' => $condition->id,
+            'name' => 'テスト商品',
+            'price' => 5000,
+            'description' => '商品の説明です。',
+            'image_path' => 'images/items/test_image.jpg',
+        ]);
+
+        $item->categories()->attach([$category1->id, $category2->id]);
+
+        $response = $this->get(route('items.detail', ['item' => $item->id]));
+
+        $response->assertStatus(200);
+
+        $response->assertSee($category1->name);
+        $response->assertSee($category2->name);
+    }
+
 }

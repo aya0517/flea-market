@@ -18,6 +18,7 @@ class ItemFactory extends Factory
             'image_path' => 'images/dummy.jpg',
             'condition_id' => $this->faker->numberBetween(1, 4),
             'user_id' => \App\Models\User::factory(),
+            'is_sold' => false,
         ];
     }
 }

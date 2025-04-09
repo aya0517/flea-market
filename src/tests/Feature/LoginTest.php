@@ -39,7 +39,6 @@ class LoginTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test
     public function test_user_can_login_with_correct_credentials()
     {
         $user = User::factory()->create([
@@ -52,8 +51,7 @@ class LoginTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/');
+        $response->assertRedirect('/mypage/profile');
         $this->assertAuthenticatedAs($user);
     }
-     */
 }

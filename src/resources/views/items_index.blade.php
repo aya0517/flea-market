@@ -6,7 +6,6 @@
 
 @section('content')
 <div class="container">
-    <!-- ナビゲーション -->
     <div class="nav-tabs">
         <a href="{{ route('items.index', array_merge(request()->query(), ['tab' => 'recommended'])) }}" class="{{ $category == 'recommended' ? 'active' : '' }}">
             おすすめ
@@ -16,7 +15,6 @@
         </a>
     </div>
 
-    <!-- 検索結果表示 -->
     @if($search)
         <p>「{{ $search }}」の検索結果</p>
     @endif
@@ -25,21 +23,22 @@
     @forelse ($items as $item)
         <div class="product-card">
             <a href="{{ route('items.detail', ['item' => $item->id]) }}">
-    <img src="{{ asset($item->image_path) }}" alt="{{ $item->name }}">
-</a>
+                <img src="{{ asset($item->image_path) }}" alt="{{ $item->name }}">
+            </a>
 
-<div class="product-info">
-    <a href="{{ route('items.detail', ['item' => $item->id]) }}">
-        <p class="product-name">{{ $item->name }}</p>
-    </a>
-    @if ($item->is_sold)
-        <span class="sold-label">Sold</span>
-    @endif
-</div>
+            <div class="product-info">
+                <a href="{{ route('items.detail', ['item' => $item->id]) }}">
+                    <p class="product-name">{{ $item->name }}</p>
+                </a>
+
+                @if ($item->is_sold)
+                    <p class="sold-label">Sold</p>
+                @endif
+            </div>
         </div>
     @empty
         <p>該当する商品がありません。</p>
     @endforelse
-    </div>
 </div>
+
 @endsection

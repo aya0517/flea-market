@@ -11,11 +11,6 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if (Auth::check())
-    <link rel="stylesheet" href="{{ asset('css/header-logged-in.css') }}">
-    @else
-    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
-    @endif
     @yield('css')
 </head>
 
@@ -55,7 +50,6 @@
         @endif
     </div>
 </header>
-
 
     <div class="container">
         @if(session('success'))

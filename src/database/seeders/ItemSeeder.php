@@ -118,6 +118,17 @@ class ItemSeeder extends Seeder
                 'user_id' => $users->random(),
                 'category_names' => ['レディース', 'コスメ','ファッション'],
             ],
+            [
+                'name' => 'テストSOLD商品',
+                'price' => 9999,
+                'description' => '売れた商品のテスト表示用',
+                'image_path' => 'images/items/dummy.jpg',
+                'condition_id' => 2,
+                'user_id' => $users->random(),
+                'category_names' => ['家電'],
+                'is_sold' => true,
+            ],
+
         ];
 
         foreach ($items as $itemData) {
@@ -131,7 +142,12 @@ class ItemSeeder extends Seeder
             $item->categories()->attach($categoryIds);
 
             if ($item->name === 'ノートPC') {
-                $item->buyer_id = $specificUser->id;
+                if ($item->user_id === $specificUser->id) {
+                    $otherUserIds = $users->filter(fn($id) => $id !== $item->user_id);
+                    $item->buyer_id = $otherUserIds->random();
+                } else {
+                    $item->buyer_id = $specificUser->id;
+                }
                 $item->save();
             }
         }

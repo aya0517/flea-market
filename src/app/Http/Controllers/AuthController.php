@@ -63,7 +63,6 @@ class AuthController extends Controller
 
             logger()->info("first_login の値: " . json_encode($user->first_login));
 
-            // 初回ログイン時にプロフィール編集ページへ
             if ($user->first_login) {
                 logger()->info("初回ログイン: /mypage/profile にリダイレクト");
                 return redirect()->route('mypage.profile.edit');

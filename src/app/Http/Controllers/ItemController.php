@@ -15,17 +15,30 @@ class ItemController extends Controller
         $search = $request->query('search');
 
         if ($category === 'recommended') {
-            $items = Item::withCount('favorites')
-                ->when($user, fn($query) => $query->where('user_id', '!=', $user->id))
-                ->when($search, fn($query) => $query->where('name', 'like', "%$search%"))
-                ->orderByDesc('favorites_count')
-                ->paginate(10);
+            $itemsQuery = Item::withCount('favorites');
+
+            if ($user) {
+                $itemsQuery->where('user_id', '!=', $user->id);
+            }
+
+            if ($search) {
+                $itemsQuery->where('name', 'like', "%$search%");
+            }
+
+            $items = $itemsQuery->orderByDesc('favorites_count')->paginate(10);
+
         } else {
-            $items = $user
-                ? $user->favorites()
-                    ->when($search, fn($query) => $query->where('name', 'like', "%$search%"))
-                    ->paginate(10)
-                : collect();
+            if ($user) {
+                $favoriteItemIds = $user->favorites()->pluck('item_id');
+
+                $items = Item::whereIn('id', $favoriteItemIds)
+                    ->when($search, function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                    })
+                    ->paginate(10);
+            } else {
+                $items = collect();
+            }
         }
 
         return view('items_index', compact('items', 'category', 'search'));
@@ -61,7 +74,6 @@ class ItemController extends Controller
             $imagePath = 'images/items/' . $fileName;
         }
 
-        // 商品を保存
         $item = Item::create([
             'name' => $request->name,
             'brand' => $request->brand,

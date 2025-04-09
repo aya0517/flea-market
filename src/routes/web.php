@@ -12,22 +12,17 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SellController;
 
 Route::middleware(['web'])->group(function () {
-    // ホームページ（商品一覧）
     Route::get('/', [ItemController::class, 'index'])->name('items.index');
 
-    // 商品詳細ページ
     Route::get('/item/{item}', [ItemController::class, 'detail'])->name('items.detail');
 
-    // ユーザー登録
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
 
-    // ログイン・ログアウト
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // マイページ
     Route::middleware(['auth'])->group(function () {
         Route::get('/mypage/profile', [MypageController::class, 'edit'])->name('mypage.profile.edit');
         Route::post('/mypage/profile', [MypageController::class, 'update'])->name('mypage.profile.update');
@@ -35,28 +30,24 @@ Route::middleware(['web'])->group(function () {
         Route::get('/mypage', [MypageController::class, 'index'])->name('mypage.index');
     });
 
-    // メール認証
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
     })->middleware('auth')->name('verification.notice');
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+        $request->fulfill();
 
-    $user = auth()->user();
+        $user = auth()->user();
 
         if (!$user->profile) {
-        logger()->info("メール認証後: プロフィール未登録なので編集画面へリダイレクト");
-        return redirect()->route('mypage.profile.edit');
-    }
+            return redirect()->route('mypage.profile.edit');
+        }
 
-    if ($user && $user->first_login) {
+        if ($user && $user->first_login) {
+            return redirect()->route('mypage.profile.edit');
+        }
 
-        logger()->info("メール認証後: 初回プロフィール編集ページへリダイレクト");
-        return redirect()->route('mypage.profile.edit');
-    }
-
-    return redirect()->route('items.index');
+        return redirect()->route('items.index');
     })->middleware(['auth', 'signed'])->name('verification.verify');
 
     Route::post('/email/resend', function (Request $request) {
@@ -66,7 +57,6 @@ Route::middleware(['web'])->group(function () {
 
     Route::post('/items/{item}/favorite', [ItemController::class, 'toggleFavorite'])->name('items.favorite');
 
-    // 購入関連
     Route::middleware(['auth'])->group(function () {
         Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])->name('purchase.show');
         Route::post('/purchase/process', [PurchaseController::class, 'processPayment'])->name('purchase.process');
@@ -74,22 +64,12 @@ Route::middleware(['web'])->group(function () {
         Route::get('/purchase/success/{item_id}', [PurchaseController::class, 'paymentSuccess'])->name('purchase.success');
         Route::get('/purchase/cancel', [PurchaseController::class, 'paymentCancel'])->name('purchase.cancel');
 
-        // 配送先変更
         Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'editAddress'])->name('purchase.address');
         Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('purchase.address.update');
-
-        // 購入履歴
-        Route::get('/mypage', [MypageController::class, 'index'])->name('mypage.index');
     });
 
-    // 商品コメント
     Route::post('/items/{item}/comments', [CommentController::class, 'store'])->middleware('auth')->name('comments.store');
 
-    // いいね機能
-    Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
-    Route::delete('/favorites/{item}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
-
-     // 商品販売ページ
     Route::middleware(['auth'])->group(function () {
         Route::get('/sell', [SellController::class, 'create'])->name('sell.create');
         Route::post('/sell', [SellController::class, 'store'])->name('sell.store');
