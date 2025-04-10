@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\Item;
 use App\Http\Requests\AddressRequest;
+use App\Http\Requests\ProfileRequest;
 
 class MypageController extends Controller
 {
@@ -20,14 +21,16 @@ class MypageController extends Controller
         return view('mypage.profile', compact('purchasedItems'));
     }
 
-    public function update(AddressRequest $request, ProfileRequest $profileRequest)
+    public function update(AddressRequest $addressRequest, ProfileRequest $profileRequest)
     {
         $user = Auth::user();
         $addressValidated = $addressRequest->validated();
         $profileValidated = $profileRequest->validated();
 
-        if ($request->hasFile('profile_image')) {
-            $validated['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        $validated = array_merge($addressValidated, $profileValidated);
+
+        if ($addressRequest->hasFile('profile_image')) {
+            $validated['profile_image'] = $addressRequest->file('profile_image')->store('profile_images', 'public');
         } else {
             $validated['profile_image'] = optional($user->profile)->profile_image;
         }

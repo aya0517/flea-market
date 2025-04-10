@@ -8,12 +8,6 @@
 <div class="profile-content">
     <h2 class="profile-title">プロフィール設定</h2>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <form action="{{ route('mypage.profile.update') }}" method="post" enctype="multipart/form-data">
         @csrf
 
