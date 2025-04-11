@@ -57,7 +57,8 @@ php artisan serve
 ```
 
 -   env.ファイルの以下の部分を、編集してください
-STRIPE_SECRETキーを変更してください
+STRIPE_SECRETキーを変更してください　　
+
 
 ## 使用技術
 
