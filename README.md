@@ -46,6 +46,11 @@ php artisan key:generate
 php artisan migrate
 ```
 
+-   シーダーを実行するため、以下を実行
+```
+php artisan db:seed
+```
+
 -   サーバーを起動するため、以下を実行
 ```
 php artisan serve
